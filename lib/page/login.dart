@@ -5,7 +5,6 @@ import 'package:demo09/api/config/http_response.dart';
 import 'package:demo09/api/config/index.dart';
 import 'package:demo09/api/transformer/login_status.dart';
 import 'package:demo09/component/login/login_form.dart';
-import 'package:demo09/model/login_status.dart';
 import 'package:demo09/store/account.dart';
 import 'package:demo09/store/http.dart';
 import 'package:flutter/material.dart';

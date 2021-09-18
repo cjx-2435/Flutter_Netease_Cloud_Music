@@ -1,16 +1,12 @@
 import 'dart:async';
-import 'package:demo09/api/config/default_http_transformer.dart';
 import 'package:demo09/api/config/http_client.dart';
 import 'package:demo09/api/config/http_response.dart';
 import 'package:demo09/iconfont/index.dart';
-import 'package:demo09/model/login_status.dart';
 import 'package:demo09/store/account.dart';
 import 'package:demo09/store/http.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
@@ -21,8 +17,8 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   double radius = 10;
-  double switch_height = 50;
-  int active_index = 0;
+  double switchHeight = 50;
+  int activeIndex = 0;
   Timer? _timer;
   int countdownTime = 0;
   final _formKey = GlobalKey<FormState>();
@@ -194,7 +190,7 @@ class _LoginFormState extends State<LoginForm> {
         ),
       ),
       constraints: BoxConstraints.tightForFinite(
-          width: double.infinity, height: switch_height),
+          width: double.infinity, height: switchHeight),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -203,7 +199,7 @@ class _LoginFormState extends State<LoginForm> {
             index: 0,
             onPressed: () {
               setState(() {
-                active_index = 0;
+                activeIndex = 0;
                 _pageController.jumpToPage(0);
               });
             },
@@ -215,7 +211,7 @@ class _LoginFormState extends State<LoginForm> {
             index: 1,
             onPressed: () {
               setState(() {
-                active_index = 1;
+                activeIndex = 1;
                 _pageController.jumpToPage(1);
               });
             },
@@ -248,7 +244,7 @@ class _LoginFormState extends State<LoginForm> {
           height: double.infinity,
           decoration: BoxDecoration(
             borderRadius: radius,
-            color: index == active_index ? activeColor : color,
+            color: index == activeIndex ? activeColor : color,
           ),
           child: InkWell(
             borderRadius: radius,
@@ -257,11 +253,11 @@ class _LoginFormState extends State<LoginForm> {
                 text,
                 style: TextStyle(
                   fontSize: 18,
-                  color: index == active_index ? activeTextColor : textColor,
+                  color: index == activeIndex ? activeTextColor : textColor,
                 ),
               ),
             ),
-            splashColor: index == active_index
+            splashColor: index == activeIndex
                 ? Colors.white24
                 : Theme.of(context).primaryColorLight,
             highlightColor: Colors.transparent,
@@ -277,7 +273,7 @@ class _LoginFormState extends State<LoginForm> {
       child: PageView(
         controller: _pageController,
         onPageChanged: (index) {
-          active_index = index;
+          activeIndex = index;
           setState(() {});
         },
         children: [
@@ -406,7 +402,7 @@ class _LoginFormState extends State<LoginForm> {
             ),
             onPressed: () {
               FocusScope.of(context).requestFocus();
-              active_index == 0 ? loginWithPassword() : loginWithCaptcha();
+              activeIndex == 0 ? loginWithPassword() : loginWithCaptcha();
             },
             child: Text('登录'),
           ),

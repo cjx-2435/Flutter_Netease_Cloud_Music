@@ -42,7 +42,7 @@ class UnauthorisedException extends HttpException {
 }
 
 class BadResponseException extends HttpException {
-  dynamic? data;
+  dynamic data;
 
   BadResponseException([this.data]) : super();
 }

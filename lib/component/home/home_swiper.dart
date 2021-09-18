@@ -5,7 +5,6 @@ import 'package:demo09/api/transformer/banner.dart';
 import 'package:demo09/model/banner.dart';
 import 'package:demo09/store/http.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 

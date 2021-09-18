@@ -2,7 +2,7 @@ import 'package:demo09/api/config/http_exceptions.dart';
 
 class HttpResponse {
   late bool ok;
-  dynamic? data;
+  dynamic data;
   HttpException? error;
 
   HttpResponse._internal({this.ok = false});
@@ -16,7 +16,7 @@ class HttpResponse {
     this.ok = false;
   }
 
-  HttpResponse.failureFormResponse({dynamic? data}) {
+  HttpResponse.failureFormResponse({dynamic data}) {
     this.error = BadResponseException(data);
     this.ok = false;
   }

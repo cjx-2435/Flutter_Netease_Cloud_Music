@@ -1,9 +1,5 @@
 import 'package:demo09/api/config/http_client.dart';
 import 'package:demo09/api/config/http_config.dart';
-import 'package:demo09/api/config/http_response.dart';
-import 'package:demo09/api/transformer/login_status.dart';
-import 'package:demo09/model/login_status.dart';
-import 'package:demo09/page/home_page.dart';
 import 'package:demo09/page/login.dart';
 import 'package:demo09/route/routes.dart';
 import 'package:demo09/store/account.dart';
@@ -46,43 +42,44 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     print('Root 重构');
     return FutureBuilder(
-        future: _createHttpClient(),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-            case ConnectionState.waiting:
-            case ConnectionState.active:
-              return MaterialApp(
-                home: Center(
-                  child: SpinKitWave(
-                    color: Colors.red,
-                    size: 100,
-                  ),
+      future: _createHttpClient(),
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.none:
+          case ConnectionState.waiting:
+          case ConnectionState.active:
+            return MaterialApp(
+              home: Center(
+                child: SpinKitWave(
+                  color: Colors.red,
+                  size: 100,
                 ),
-              );
-            case ConnectionState.done:
-            default:
-              return MultiProvider(
-                providers: [
-                  ChangeNotifierProvider<HttpModel>(
-                      create: (_) => HttpModel(client!)),
-                  ChangeNotifierProvider<AccountModel>(
-                      create: (_) => AccountModel()),
-                ],
-                child: MaterialApp(
-                  theme: ThemeData(
-                    primaryColor: Color(0xffd44439),
-                    primaryColorLight: Colors.red[100],
-                    primaryColorDark: Colors.red[800],
-                    highlightColor: Colors.transparent,
-                    splashColor: Colors.transparent,
-                  ),
-                  routes: Routes.getRoutes(context),
-                  home: LoginPage(),
-                  builder: EasyLoading.init(),
+              ),
+            );
+          case ConnectionState.done:
+          default:
+            return MultiProvider(
+              providers: [
+                ChangeNotifierProvider<HttpModel>(
+                    create: (_) => HttpModel(client!)),
+                ChangeNotifierProvider<AccountModel>(
+                    create: (_) => AccountModel()),
+              ],
+              child: MaterialApp(
+                theme: ThemeData(
+                  primaryColor: Color(0xffd44439),
+                  primaryColorLight: Colors.red[100],
+                  primaryColorDark: Colors.red[800],
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
                 ),
-              );
-          }
-        });
+                routes: Routes.getRoutes(context),
+                home: LoginPage(),
+                builder: EasyLoading.init(),
+              ),
+            );
+        }
+      },
+    );
   }
 }

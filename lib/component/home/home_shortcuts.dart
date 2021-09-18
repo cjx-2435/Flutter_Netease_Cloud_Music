@@ -1,8 +1,7 @@
-import 'package:demo09/api/config/http_client.dart';
+
 import 'package:demo09/iconfont/index.dart';
 import 'package:demo09/model/shortcuts.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class HomeShortcuts extends StatefulWidget {
   const HomeShortcuts({Key? key}) : super(key: key);

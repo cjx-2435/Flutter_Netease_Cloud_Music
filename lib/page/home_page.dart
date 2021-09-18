@@ -1,8 +1,6 @@
-import 'package:demo09/api/config/http_client.dart';
-import 'package:demo09/component/home/search_control.dart';
+
 import 'package:demo09/component/home/user_info.dart';
 import 'package:demo09/iconfont/index.dart';
-import 'package:demo09/model/login_status.dart';
 import 'package:demo09/model/tab_bar.dart';
 import 'package:demo09/page/tab_page/community.dart';
 import 'package:demo09/page/tab_page/find.dart';
