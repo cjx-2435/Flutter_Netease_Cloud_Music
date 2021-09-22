@@ -7,6 +7,7 @@ import 'package:demo09/store/http.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
@@ -82,6 +83,13 @@ class _LoginFormState extends State<LoginForm> {
     if (EasyLoading.isShow) EasyLoading.dismiss(animation: true);
     if (res?.ok ?? false) {
       context.read<AccountModel>().isLogin = true;
+      SharedPreferences storage = await SharedPreferences.getInstance();
+      storage.setString('nickname', res?.data['profile']['nickname'] ?? '游客');
+      storage.setString('avatar', res?.data['profile']['avatarUrl'] ?? '');
+      storage.setString('bgImage', res?.data['profile']['backgroundUrl'] ?? '');
+      await Navigator.of(context).pushReplacementNamed(
+        '/HomePage',
+      );
     } else {
       EasyLoading.showError('登陆失败(${res?.error?.message ?? '未知异常'})');
       context.read<AccountModel>().isLogin = false;
@@ -96,6 +104,13 @@ class _LoginFormState extends State<LoginForm> {
 
     if (res?.ok ?? false) {
       context.read<AccountModel>().isLogin = true;
+      SharedPreferences storage = await SharedPreferences.getInstance();
+      storage.setString('nickname', res?.data['profile']['nickname'] ?? '游客');
+      storage.setString('avatar', res?.data['profile']['avatarUrl'] ?? '');
+      storage.setString('bgImage', res?.data['profile']['backgroundUrl'] ?? '');
+      await Navigator.of(context).pushReplacementNamed(
+        '/HomePage',
+      );
     } else {
       EasyLoading.showError('${res?.error?.message ?? '未知异常'}');
       context.read<AccountModel>().isLogin = false;

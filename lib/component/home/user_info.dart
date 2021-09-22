@@ -34,8 +34,12 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   Future<void> _loginOut() async {
-    EasyLoading.show(status: '正在登出...');
-    HttpResponse? res = await _dio?.get('/logout');
+    EasyLoading.show(
+      status: '正在登出...',
+    );
+    HttpResponse? res = await _dio?.get('/logout?${DateTime.now().millisecondsSinceEpoch}');
+    print(res?.ok);
+    print(res?.error);
     if (res?.ok ?? false) {
       SharedPreferences storage = await SharedPreferences.getInstance();
       storage.clear();

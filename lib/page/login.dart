@@ -23,8 +23,8 @@ class _LoginPageState extends State<LoginPage> {
   HttpClient? _dio;
 
   Future<void> _getLoginStatus() async {
-    HttpResponse? res = await _dio?.get('/login/status',
-        httpTransformer: LoginStatusTransfromer.getInstance());
+    HttpResponse? res = await _dio?.get('/login/status?${DateTime.now().millisecondsSinceEpoch}',
+        httpTransformer: LoginStatusTransfromer.getInstance(),);
     if (res?.ok ?? false) {
       context.read<AccountModel>().isLogin = true;
       SharedPreferences storage = await SharedPreferences.getInstance();

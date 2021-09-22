@@ -1,4 +1,3 @@
-
 import 'package:demo09/component/home/user_info.dart';
 import 'package:demo09/iconfont/index.dart';
 import 'package:demo09/model/tab_bar.dart';
@@ -8,6 +7,7 @@ import 'package:demo09/page/tab_page/follow.dart';
 import 'package:demo09/page/tab_page/my.dart';
 import 'package:demo09/page/tab_page/podcast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -68,12 +68,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     print('App重构');
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          FocusScope.of(context).requestFocus(FocusNode());
-        });
-      },
+    return KeyboardDismissOnTap(
       child: Scaffold(
         body: IndexedStack(
           index: _currentIndex,

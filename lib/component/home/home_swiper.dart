@@ -21,13 +21,17 @@ class _HomeSwiperState extends State<HomeSwiper> {
 
   Future<void> getBanners() async {
     HttpResponse? res = await _dio?.get(
-      '/banner',
+      '/banner?${DateTime.now().millisecondsSinceEpoch}',
       httpTransformer: BannerTransfromer.getInstance(),
     );
     if (res?.ok ?? false) {
       _banners.clear();
       res?.data.forEach((e) {
         _banners.add(BannerModel.fromMap(e));
+      });
+    } else {
+      Future.delayed(Duration(seconds: 5), () {
+        getBanners();
       });
     }
   }

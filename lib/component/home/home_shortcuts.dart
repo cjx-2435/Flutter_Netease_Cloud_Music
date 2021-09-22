@@ -1,4 +1,3 @@
-
 import 'package:demo09/iconfont/index.dart';
 import 'package:demo09/model/shortcuts.dart';
 import 'package:flutter/material.dart';
@@ -63,37 +62,38 @@ class _HomeShortcutsState extends State<HomeShortcuts> {
         Size(360, 90),
       ),
       child: GridView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            childAspectRatio: 1,
-          ),
-          itemCount: 4,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 45,
-                    height: 45,
-                    child: CircleAvatar(
-                      child: list[index].icon,
-                      backgroundColor: Color(0x45d59c9c),
-                    ),
+        physics: NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+          childAspectRatio: 1,
+        ),
+        itemCount: 4,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 45,
+                  height: 45,
+                  child: CircleAvatar(
+                    child: list[index].icon,
+                    backgroundColor: Color(0x45d59c9c),
                   ),
-                  Padding(padding: EdgeInsets.only(bottom: 5)),
-                  Text(
-                    list[index].label,
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
-                  ),
-                ],
-              ),
-              onTap: () {
-                print(index);
-              },
-            );
-          }),
+                ),
+                Padding(padding: EdgeInsets.only(bottom: 5)),
+                Text(
+                  list[index].label,
+                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                ),
+              ],
+            ),
+            onTap: () {
+              print(index);
+            },
+          );
+        },
+      ),
     );
   }
 }
