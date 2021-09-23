@@ -82,7 +82,7 @@ class _RecommendPlayListState extends State<RecommendPlayList> {
               Shimmer(
                 child: Container(
                   width: 80,
-                  height: 20,
+                  height: 30,
                   color: Colors.grey,
                 ),
               ),
@@ -121,10 +121,10 @@ class _RecommendPlayListState extends State<RecommendPlayList> {
               Padding(padding: EdgeInsets.only(bottom: 7)),
               Container(
                 width: 100,
-                height: 20,
+                height: 40,
                 child: Text(
                   playlist[index]!.name,
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(color: Colors.white),
                 ),
