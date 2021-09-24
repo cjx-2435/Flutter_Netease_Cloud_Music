@@ -23,17 +23,25 @@ class _LoginPageState extends State<LoginPage> {
   HttpClient? _dio;
 
   Future<void> _getLoginStatus() async {
-    HttpResponse? res = await _dio?.get('/login/status?${DateTime.now().millisecondsSinceEpoch}',
-        httpTransformer: LoginStatusTransfromer.getInstance(),);
+    HttpResponse? res = await _dio?.get(
+      '/login/status?${DateTime.now().millisecondsSinceEpoch}',
+      httpTransformer: LoginStatusTransfromer.getInstance(),
+    );
     if (res?.ok ?? false) {
       context.read<AccountModel>().isLogin = true;
-      SharedPreferences storage = await SharedPreferences.getInstance();
-      storage.setString('nickname', res?.data['profile']['nickname'] ?? '游客');
-      storage.setString('avatar', res?.data['profile']['avatarUrl'] ?? '');
-      storage.setString('bgImage', res?.data['profile']['backgroundUrl'] ?? '');
-      await Navigator.of(context).pushReplacementNamed(
-        '/HomePage',
-      );
+      HttpResponse? status = await _dio?.get('/login/refresh');
+      if (!status!.ok) {
+        context.read<AccountModel>().isLogin = false;
+      } else {
+        SharedPreferences storage = await SharedPreferences.getInstance();
+        storage.setString('nickname', res?.data['profile']['nickname'] ?? '游客');
+        storage.setString('avatar', res?.data['profile']['avatarUrl'] ?? '');
+        storage.setString(
+            'bgImage', res?.data['profile']['backgroundUrl'] ?? '');
+        await Navigator.of(context).pushReplacementNamed(
+          '/HomePage',
+        );
+      }
     } else {
       context.read<AccountModel>().isLogin = false;
     }

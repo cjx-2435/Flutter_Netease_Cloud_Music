@@ -37,12 +37,15 @@ class _UserInfoState extends State<UserInfo> {
     EasyLoading.show(
       status: '正在登出...',
     );
-    HttpResponse? res = await _dio?.get('/logout?${DateTime.now().millisecondsSinceEpoch}');
+    HttpResponse? res =
+        await _dio?.get('/logout?${DateTime.now().millisecondsSinceEpoch}');
     print(res?.ok);
     print(res?.error);
     if (res?.ok ?? false) {
       SharedPreferences storage = await SharedPreferences.getInstance();
-      storage.clear();
+      await storage.remove('nickname');
+      await storage.remove('avatar');
+      await storage.remove('bgImage');
       EasyLoading.showSuccess('已登出');
       await Navigator.of(context).pushReplacementNamed(
         '/Login',
@@ -90,14 +93,17 @@ class _UserInfoState extends State<UserInfo> {
                     );
                   case ConnectionState.done:
                   default:
+                    bgImage ??= '';
+                    avatar ??= '';
                     return Container(
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        image: (bgImage == null || bgImage!.isEmpty)
+                        image: (bgImage == null || bgImage?.length == 0)
                             ? null
                             : DecorationImage(
                                 image: NetworkImage(bgImage!),
-                                fit: BoxFit.cover),
+                                fit: BoxFit.cover,
+                              ),
                       ),
                       child: Row(
                         children: [
@@ -107,7 +113,7 @@ class _UserInfoState extends State<UserInfo> {
                             margin: EdgeInsets.only(right: 15),
                             child: CircleAvatar(
                               backgroundImage:
-                                  (avatar == null || avatar!.isEmpty)
+                                  (avatar == null || avatar?.length == 0)
                                       ? null
                                       : NetworkImage(avatar!),
                             ),

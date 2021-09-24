@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
     {
       'activeIcon': iconMusic(color: Colors.white),
       'inactiveIcon': iconMusic(color: Colors.grey),
-      'label': '音乐',
+      'label': '我的',
       'active': false,
     },
     {

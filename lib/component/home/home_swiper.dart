@@ -1,12 +1,16 @@
+import 'dart:convert';
+
 import 'package:card_swiper/card_swiper.dart';
 import 'package:demo09/api/config/http_client.dart';
 import 'package:demo09/api/config/http_response.dart';
 import 'package:demo09/api/transformer/banner.dart';
 import 'package:demo09/model/banner.dart';
+import 'package:demo09/notify/network_progress.dart';
 import 'package:demo09/store/http.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeSwiper extends StatefulWidget {
   const HomeSwiper({Key? key}) : super(key: key);
@@ -20,20 +24,45 @@ class _HomeSwiperState extends State<HomeSwiper> {
   HttpClient? _dio;
 
   Future<void> getBanners() async {
+    print('getBanners ${_dio.hashCode}');
+    // 开始发送请求
+    NetworkProgressNotification(false).dispatch(context);
     HttpResponse? res = await _dio?.get(
-      '/banner?${DateTime.now().millisecondsSinceEpoch}',
+      '/banner',
       httpTransformer: BannerTransfromer.getInstance(),
     );
+
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     if (res?.ok ?? false) {
       _banners.clear();
+      // 缓存请求数据
+      await sharedPreferences.setStringList(
+        'banners',
+        res?.data.map<String>((e) => json.encode(e)).toList(),
+      );
       res?.data.forEach((e) {
         _banners.add(BannerModel.fromMap(e));
       });
     } else {
-      Future.delayed(Duration(seconds: 5), () {
-        getBanners();
-      });
+      // 当响应完成返回304时，说明请求结果没有变化，使用之前缓存的数据
+      if (res?.error?.code == 304) {
+        if (sharedPreferences.getStringList('banners')?.isNotEmpty ?? false) {
+          _banners.clear();
+          sharedPreferences
+              .getStringList('banners')!
+              .map<Map<String, dynamic>>((e) => jsonDecode(e))
+              .toList()
+              .forEach((e) {
+            _banners.add(BannerModel.fromMap(e));
+          });
+        }
+      } else
+        Future.delayed(Duration(seconds: 5), () {
+          setState(() {});
+        });
     }
+    // 请求发送完成
+    NetworkProgressNotification(true).dispatch(context);
   }
 
   @override
@@ -72,6 +101,13 @@ class _HomeSwiperState extends State<HomeSwiper> {
                 );
               case ConnectionState.done:
               default:
+                List<Image> banner = [];
+                _banners.forEach((element) {
+                  banner.add(Image.network(
+                    element?.imageUrl ?? '' + '?param=1080y400',
+                    fit: BoxFit.cover,
+                  ));
+                });
                 return Swiper(
                   index: 0,
                   loop: true,
@@ -79,10 +115,7 @@ class _HomeSwiperState extends State<HomeSwiper> {
                   duration: 300,
                   itemCount: _banners.length,
                   itemBuilder: (context, index) {
-                    return Image.network(
-                      _banners[index]!.imageUrl + '?param=1080y400',
-                      fit: BoxFit.cover,
-                    );
+                    return banner[index];
                   },
                   pagination: SwiperPagination(
                     builder: RectSwiperPaginationBuilder(

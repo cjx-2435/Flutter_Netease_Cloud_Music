@@ -4,6 +4,7 @@ import 'package:demo09/page/login.dart';
 import 'package:demo09/route/routes.dart';
 import 'package:demo09/store/account.dart';
 import 'package:demo09/store/http.dart';
+import 'package:demo09/store/refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -64,8 +65,11 @@ class _MyAppState extends State<MyApp> {
                     create: (_) => HttpModel(client!)),
                 ChangeNotifierProvider<AccountModel>(
                     create: (_) => AccountModel()),
+                ChangeNotifierProvider<RefreshModel>(
+                    create: (_) => RefreshModel()),
               ],
               child: MaterialApp(
+                // showPerformanceOverlay: true,
                 theme: ThemeData(
                   primaryColor: Color(0xffd44439),
                   primaryColorLight: Colors.red[100],
@@ -83,3 +87,5 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+
+

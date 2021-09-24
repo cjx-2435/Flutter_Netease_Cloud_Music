@@ -6,7 +6,9 @@ class RecommendTransfromer extends HttpTransformer {
   @override
   HttpResponse parse(Response response) {
     if (response.data["code"] == 200) {
-      return HttpResponse.success(response.data['recommend']);
+      return HttpResponse.success(
+        response.data['recommend'] ?? response.data['result'],
+      );
     } else {
       return HttpResponse.failure(
           errorMsg: response.data["message"], errorCode: response.data["code"]);
@@ -22,4 +24,3 @@ class RecommendTransfromer extends HttpTransformer {
   /// 工厂构造方法，这里使用命名构造函数方式进行声明
   factory RecommendTransfromer.getInstance() => _instance;
 }
-

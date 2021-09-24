@@ -4,7 +4,8 @@ class PlayList {
   final String name;
   final String copywriter;
   final String picUrl;
-  final int playcount;
+  int? playcount;
+  int? playCount;
 
   PlayList({
     required this.id,
@@ -13,6 +14,7 @@ class PlayList {
     required this.copywriter,
     required this.picUrl,
     required this.playcount,
+    required this.playCount,
   });
 
   PlayList.fromMap(Map<String, dynamic> map)
@@ -21,7 +23,6 @@ class PlayList {
         name = map['name'],
         copywriter = map['copywriter'],
         picUrl = map['picUrl'],
-        playcount = map['playcount'];
+        playcount = map['playcount'],
+        playCount = map['playCount'];
 }
-
-
