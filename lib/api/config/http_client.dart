@@ -11,20 +11,6 @@ class HttpClient {
   HttpClient({BaseOptions? options, HttpConfig? dioConfig})
       : _dio = AppDio(options: options, dioConfig: dioConfig);
 
-  // /// 单例对象
-  // static HttpClient _instance = HttpClient._internal();
-
-  // /// 内部构造方法，可避免外部暴露构造函数，进行实例化
-  // HttpClient._internal({BaseOptions? options, HttpConfig? dioConfig})
-  //     : _dio = AppDio(options: options, dioConfig: dioConfig);
-
-  // /// 工厂构造方法，这里使用命名构造函数方式进行声明
-  // factory HttpClient.getInstance(
-  //     {BaseOptions? options, HttpConfig? dioConfig}) {
-  //   return _instance =
-  //       HttpClient._internal(dioConfig: dioConfig, options: options);
-  // }
-
   Future<HttpResponse> get(
     String uri, {
     Map<String, dynamic>? queryParameters,

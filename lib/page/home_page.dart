@@ -1,4 +1,5 @@
 import 'package:demo09/component/home/user_info.dart';
+import 'package:demo09/component/music_player.dart';
 import 'package:demo09/iconfont/index.dart';
 import 'package:demo09/model/tab_bar.dart';
 import 'package:demo09/page/tab_page/community.dart';

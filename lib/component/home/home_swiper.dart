@@ -24,7 +24,6 @@ class _HomeSwiperState extends State<HomeSwiper> {
   HttpClient? _dio;
 
   Future<void> getBanners() async {
-    print('getBanners ${_dio.hashCode}');
     // 开始发送请求
     NetworkProgressNotification(false).dispatch(context);
     HttpResponse? res = await _dio?.get(
