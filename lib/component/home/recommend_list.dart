@@ -101,9 +101,20 @@ class _RecommendListState extends State<RecommendList> {
       httpTransformer: DetailPlayListTransfromer.getInstance(),
     );
     if (res?.ok ?? false) {
-      final data = res!.data.map((e) => DetailPlayList.fromMap(e));
-      print(context);
-      await Navigator.pushNamed(context, '/PlayList', arguments: data);
+      List<DetailPlayList> data = res!.data['tracks']
+          .map<DetailPlayList>((e) => DetailPlayList.fromMap(e))
+          .toList();
+      print('开始跳转');
+      await Navigator.pushNamed(context, '/PlayList', arguments: {
+        'name': res.data['name'],
+        'coverImg': Image.network(
+          res.data['coverImgUrl'],
+          fit: BoxFit.cover,
+        ),
+        'updateTime': res.data['updateTime'],
+        'data': data,
+      });
+      print('返回');
     } else {
       print(res?.error);
     }

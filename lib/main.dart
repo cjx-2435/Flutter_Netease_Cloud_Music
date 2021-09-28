@@ -4,6 +4,7 @@ import 'package:demo09/page/login.dart';
 import 'package:demo09/route/routes.dart';
 import 'package:demo09/store/account.dart';
 import 'package:demo09/store/http.dart';
+import 'package:demo09/store/player.dart';
 import 'package:demo09/store/refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -67,6 +68,8 @@ class _MyAppState extends State<MyApp> {
                     create: (_) => AccountModel()),
                 ChangeNotifierProvider<RefreshModel>(
                     create: (_) => RefreshModel()),
+                ChangeNotifierProvider<PlayerModel>(
+                    create: (_) => PlayerModel()),
               ],
               child: MaterialApp(
                 // showPerformanceOverlay: true,

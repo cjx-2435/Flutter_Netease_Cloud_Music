@@ -8,7 +8,7 @@ class DetailPlayListTransfromer extends HttpTransformer {
     if (response.data["code"] == 200 &&
         response.data['playlist'] != null &&
         response.data['playlist']['tracks'] != null) {
-      return HttpResponse.success(response.data['playlist']['tracks']);
+      return HttpResponse.success(response.data['playlist']);
     } else {
       return HttpResponse.failure(
           errorMsg: response.data["message"], errorCode: response.data["code"]);

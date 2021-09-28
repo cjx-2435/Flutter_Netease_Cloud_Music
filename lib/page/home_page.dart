@@ -18,6 +18,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<Widget> _pageList = [
+    Find(),
+    Podcast(),
+    My(),
+    Follow(),
+    Community(),
+  ];
   List<TabBarModel> _tabbar = [
     {
       'activeIcon': iconHome(color: Colors.white),
@@ -71,14 +78,13 @@ class _HomePageState extends State<HomePage> {
     print('App重构');
     return KeyboardDismissOnTap(
       child: Scaffold(
-        body: IndexedStack(
-          index: _currentIndex,
+        body: Stack(
           children: [
-            Find(),
-            Podcast(),
-            My(),
-            Follow(),
-            Community(),
+            IndexedStack(
+              index: _currentIndex,
+              children: _pageList,
+            ),
+            _player,
           ],
         ),
         drawer: UserInfo(),
@@ -105,4 +111,9 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+  Widget _player = Builder(builder: (context) {
+    print('重构播放器');
+    return MusicPlayer();
+  });
 }

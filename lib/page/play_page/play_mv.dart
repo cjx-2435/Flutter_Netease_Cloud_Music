@@ -10,6 +10,9 @@ class PlayMVPage extends StatefulWidget {
 class _PlayMVPageState extends State<PlayMVPage> {
   @override
   Widget build(BuildContext context) {
+    print('****************M V****************');
+    print(ModalRoute.of(context)?.settings.arguments);
+    print('****************M V****************');
     return Container(
       color: Colors.green,
     );

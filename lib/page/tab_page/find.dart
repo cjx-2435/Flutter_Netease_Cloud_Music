@@ -5,6 +5,7 @@ import 'package:demo09/component/home/recommend_list.dart';
 import 'package:demo09/component/home/search_control.dart';
 import 'package:demo09/notify/network_progress.dart';
 import 'package:demo09/store/http.dart';
+import 'package:demo09/store/player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:provider/provider.dart';
@@ -55,6 +56,8 @@ class _FindState extends State<Find> with SingleTickerProviderStateMixin {
         actions: [
           IconButton(
             onPressed: () {
+              context.read<PlayerModel>().setVisibleStatus =
+                  !context.read<PlayerModel>().getVisibleStatus;
               showDialog(
                 context: context,
                 builder: (context) {
@@ -100,16 +103,21 @@ class _FindState extends State<Find> with SingleTickerProviderStateMixin {
               HomeShortcuts(),
               _listTile('推荐歌单', onTap: () {}),
               RecommendList(
-                type:'playlist',
+                type: 'playlist',
                 url: '/recommend/resource',
                 detailUrl: '/playlist/detail?id=',
               ),
               _listTile('推荐MV', onTap: () {}),
               RecommendList(
-                type:'mv',
+                type: 'mv',
                 url: '/personalized/mv',
                 detailUrl: '/mv/url?id=',
               ),
+              Builder(builder: (context) {
+                return SizedBox(
+                  height: context.watch<PlayerModel>().getHeight,
+                );
+              }),
             ],
           ),
         ),
