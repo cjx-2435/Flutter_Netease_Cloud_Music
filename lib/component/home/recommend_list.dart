@@ -148,9 +148,11 @@ class _RecommendListState extends State<RecommendList> {
               return _skeletonWiget();
             case ConnectionState.done:
             default:
-              return StatefulBuilder(builder: (context, setState) {
-                return _renderPlayList(context);
-              });
+              return StatefulBuilder(
+                builder: (context, setState) {
+                  return _renderPlayList(context);
+                },
+              );
           }
         },
       ),
