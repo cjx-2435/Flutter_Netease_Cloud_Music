@@ -38,6 +38,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    HttpConfig dioConfig =
+        HttpConfig(baseUrl: 'http://192.168.1.57:3000', cookiesPath: '');
   }
 
   @override
@@ -60,35 +62,33 @@ class _MyAppState extends State<MyApp> {
             );
           case ConnectionState.done:
           default:
-            return MultiProvider(
-              providers: [
-                ChangeNotifierProvider<HttpModel>(
-                    create: (_) => HttpModel(client!)),
-                ChangeNotifierProvider<AccountModel>(
-                    create: (_) => AccountModel()),
-                ChangeNotifierProvider<RefreshModel>(
-                    create: (_) => RefreshModel()),
-                ChangeNotifierProvider<PlayerModel>(
-                    create: (_) => PlayerModel()),
-              ],
-              child: MaterialApp(
-                // showPerformanceOverlay: true,
-                theme: ThemeData(
-                  primaryColor: Color(0xffd44439),
-                  primaryColorLight: Colors.red[100],
-                  primaryColorDark: Colors.red[800],
-                  highlightColor: Colors.transparent,
-                  splashColor: Colors.transparent,
-                ),
-                routes: Routes.getRoutes(context),
-                home: LoginPage(),
-                builder: EasyLoading.init(),
-              ),
-            );
+            return _entry();
         }
       },
     );
   }
+
+  Widget _entry() {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<HttpModel>(create: (_) => HttpModel(client!)),
+        ChangeNotifierProvider<AccountModel>(create: (_) => AccountModel()),
+        ChangeNotifierProvider<RefreshModel>(create: (_) => RefreshModel()),
+        ChangeNotifierProvider<PlayerModel>(create: (_) => PlayerModel()),
+      ],
+      child: MaterialApp(
+        // showPerformanceOverlay: true,
+        theme: ThemeData(
+          primaryColor: Color(0xffd44439),
+          primaryColorLight: Colors.red[100],
+          primaryColorDark: Colors.red[800],
+          highlightColor: Colors.transparent,
+          splashColor: Colors.transparent,
+        ),
+        routes: Routes.getRoutes(context),
+        home: LoginPage(),
+        builder: EasyLoading.init(),
+      ),
+    );
+  }
 }
-
-

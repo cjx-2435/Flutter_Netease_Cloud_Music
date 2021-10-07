@@ -16,7 +16,8 @@ class DetailPlayListTransfromer extends HttpTransformer {
   }
 
   /// 单例对象
-  static DetailPlayListTransfromer _instance = DetailPlayListTransfromer._internal();
+  static DetailPlayListTransfromer _instance =
+      DetailPlayListTransfromer._internal();
 
   /// 内部构造方法，可避免外部暴露构造函数，进行实例化
   DetailPlayListTransfromer._internal();

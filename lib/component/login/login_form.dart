@@ -81,19 +81,7 @@ class _LoginFormState extends State<LoginForm> {
       data: {'phone': _phone.text, 'captcha': _captcha.text},
     );
     if (EasyLoading.isShow) EasyLoading.dismiss(animation: true);
-    if (res?.ok ?? false) {
-      context.read<AccountModel>().isLogin = true;
-      SharedPreferences storage = await SharedPreferences.getInstance();
-      storage.setString('nickname', res?.data['profile']['nickname'] ?? '游客');
-      storage.setString('avatar', res?.data['profile']['avatarUrl'] ?? '');
-      storage.setString('bgImage', res?.data['profile']['backgroundUrl'] ?? '');
-      await Navigator.of(context).pushReplacementNamed(
-        '/HomePage',
-      );
-    } else {
-      EasyLoading.showError('登陆失败(${res?.error?.message ?? '未知异常'})');
-      context.read<AccountModel>().isLogin = false;
-    }
+    _saveAndPush(res);
   }
 
   void loginWithPassword() async {
@@ -101,13 +89,17 @@ class _LoginFormState extends State<LoginForm> {
     HttpResponse? res = await _dio?.post('/login/cellphone',
         data: {'phone': _phone.text, 'password': _password.text});
     if (EasyLoading.isShow) EasyLoading.dismiss(animation: true);
+    _saveAndPush(res);
+  }
 
+  void _saveAndPush(HttpResponse? res) async {
     if (res?.ok ?? false) {
       context.read<AccountModel>().isLogin = true;
       SharedPreferences storage = await SharedPreferences.getInstance();
       storage.setString('nickname', res?.data['profile']['nickname'] ?? '游客');
       storage.setString('avatar', res?.data['profile']['avatarUrl'] ?? '');
       storage.setString('bgImage', res?.data['profile']['backgroundUrl'] ?? '');
+      storage.setInt('uid', res?.data['profile']['userId'] ?? null);
       await Navigator.of(context).pushReplacementNamed(
         '/HomePage',
       );

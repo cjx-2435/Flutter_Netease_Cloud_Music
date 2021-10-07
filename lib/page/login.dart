@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:demo09/api/config/http_client.dart';
 import 'package:demo09/api/config/http_response.dart';
@@ -38,6 +39,7 @@ class _LoginPageState extends State<LoginPage> {
         storage.setString('avatar', res?.data['profile']['avatarUrl'] ?? '');
         storage.setString(
             'bgImage', res?.data['profile']['backgroundUrl'] ?? '');
+        storage.setInt('uid', res?.data['profile']['userId'] ?? null);
         await Navigator.of(context).pushReplacementNamed(
           '/HomePage',
         );

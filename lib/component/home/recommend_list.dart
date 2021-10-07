@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:demo09/api/config/http_client.dart';
 import 'package:demo09/api/config/http_response.dart';
@@ -39,6 +40,18 @@ class _RecommendListState extends State<RecommendList> {
   void initState() {
     super.initState();
     _dio = context.read<HttpModel>().dio;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    print('推荐didChangeDependencies');
+  }
+
+  @override
+  void didUpdateWidget(RecommendList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    print('推荐didUpdateWidget调用');
   }
 
   String formatNum(double num, int postion) {
@@ -107,6 +120,7 @@ class _RecommendListState extends State<RecommendList> {
       print('开始跳转');
       await Navigator.pushNamed(context, '/PlayList', arguments: {
         'name': res.data['name'],
+        'subscribed':res.data['subscribed'],
         'coverImg': Image.network(
           res.data['coverImgUrl'],
           fit: BoxFit.cover,

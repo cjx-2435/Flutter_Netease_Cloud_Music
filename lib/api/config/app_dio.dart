@@ -32,14 +32,14 @@ class AppDio with DioMixin implements Dio {
     }
 
     if (kDebugMode) {
-      // interceptors.add(LogInterceptor(
-      //   responseBody: true,
-      //   error: true,
-      //   requestHeader: false,
-      //   responseHeader: false,
-      //   request: false,
-      //   requestBody: true,
-      // ));
+      interceptors.add(LogInterceptor(
+        responseBody: true,
+        error: true,
+        requestHeader: false,
+        responseHeader: false,
+        request: false,
+        requestBody: true,
+      ));
     }
 
     if (dioConfig?.interceptors?.isNotEmpty ?? false) {

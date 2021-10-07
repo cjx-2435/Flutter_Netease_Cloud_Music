@@ -4,18 +4,22 @@ class DetailPlayList {
   final List<String> ar_name;
   final String al_name;
   final String picUrl;
+  bool subscribed;
 
-  DetailPlayList(
-      {required this.name,
-      required this.id,
-      required this.ar_name,
-      required this.al_name,
-      required this.picUrl});
+  DetailPlayList({
+    required this.name,
+    required this.id,
+    required this.ar_name,
+    required this.al_name,
+    required this.picUrl,
+    this.subscribed = false,
+  });
 
   DetailPlayList.fromMap(Map<String, dynamic> map)
       : name = map['name'],
         id = map['id'],
         ar_name = map['ar'].map<String>((e) => e['name'].toString()).toList(),
         al_name = map['al']['name'],
-        picUrl = map['al']['picUrl'];
+        picUrl = map['al']['picUrl'],
+        subscribed = map['subscribed'] ?? false;
 }

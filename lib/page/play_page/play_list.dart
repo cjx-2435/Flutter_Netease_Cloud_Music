@@ -9,6 +9,7 @@ class PlayListPage extends StatefulWidget {
 }
 
 class _PlayListPageState extends State<PlayListPage> {
+  bool? subscribed;
   String? name;
   Image? coverImg;
   String? updateTime;
@@ -22,11 +23,13 @@ class _PlayListPageState extends State<PlayListPage> {
   Widget build(BuildContext context) {
     dynamic data = ModalRoute.of(context)?.settings.arguments;
     name = data?['name'];
+    subscribed = data?['subscribed'] ?? false;
     coverImg = data?['coverImg'];
     DateTime time = DateTime.fromMillisecondsSinceEpoch(data?['updateTime']);
     updateTime =
         "最近更新：${time.year == DateTime.now().year ? '' : time.year.toString() + '年'} ${time.month}月 ${time.day}日";
     list = data?['data'];
+    print('subscribed$subscribed');
     return Material(
       child: CustomScrollView(
         slivers: [
@@ -48,9 +51,7 @@ class _PlayListPageState extends State<PlayListPage> {
         ),
         background: Stack(
           children: [
-            SizedBox.expand(
-              child: coverImg
-            ),
+            SizedBox.expand(child: coverImg),
             Positioned(
               left: 5,
               bottom: 5,
@@ -72,7 +73,7 @@ class _PlayListPageState extends State<PlayListPage> {
           return Container(
             height: 50,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
               border: Border.all(width: 1, color: Colors.grey.shade300),
             ),
             child: Row(
@@ -91,19 +92,23 @@ class _PlayListPageState extends State<PlayListPage> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      print('收藏');
+                      print('收藏状态:$subscribed');
                     },
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.only(
                           topRight: Radius.circular(18),
                         ),
-                        color: Theme.of(context).primaryColor,
+                        color: subscribed!
+                            ? Colors.grey[300]
+                            : Theme.of(context).primaryColor,
                       ),
                       width: double.infinity,
                       height: double.infinity,
                       alignment: Alignment.center,
-                      child: Text('收藏', style: TextStyle(color: Colors.white)),
+                      child: subscribed!
+                          ? Text('取消收藏', style: TextStyle(color: Colors.black))
+                          : Text('收藏', style: TextStyle(color: Colors.white)),
                     ),
                   ),
                 ),
@@ -111,56 +116,58 @@ class _PlayListPageState extends State<PlayListPage> {
             ),
           );
         } else
-          return Container(
-            constraints: BoxConstraints.tightFor(height: 70),
-            padding: EdgeInsets.only(top: 5, bottom: 5),
-            child: Column(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(bottom: 10),
-                    child: Row(
-                      children: [
-                        Container(
-                          alignment: Alignment.center,
-                          width: 50,
-                          height: 50,
-                          child: Text(
-                            index.toString(),
-                            style: TextStyle(fontSize: 18),
+          return InkWell(
+            child: Container(
+              constraints: BoxConstraints.tightFor(height: 70),
+              padding: EdgeInsets.only(top: 5, bottom: 5),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 10),
+                      child: Row(
+                        children: [
+                          Container(
+                            alignment: Alignment.center,
+                            width: 50,
+                            height: 50,
+                            child: Text(
+                              index.toString(),
+                              style: TextStyle(fontSize: 18),
+                            ),
                           ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                list![index - 1].name,
-                                style: TextStyle(fontSize: 18),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              Text(
-                                "${list![index - 1].ar_name.join('/')} - ${list![index - 1].al_name}",
-                                style:
-                                    TextStyle(fontSize: 16, color: Colors.grey),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  list![index - 1].name,
+                                  style: TextStyle(fontSize: 18),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  "${list![index - 1].ar_name.join('/')} - ${list![index - 1].al_name}",
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.grey),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                index == list!.length
-                    ? SizedBox()
-                    : Divider(
-                        color: Colors.grey,
-                        height: 1,
-                        indent: 0,
-                      ),
-              ],
+                  index == list!.length
+                      ? SizedBox()
+                      : Divider(
+                          color: Colors.grey,
+                          height: 1,
+                          indent: 0,
+                        ),
+                ],
+              ),
             ),
           );
       }, childCount: list!.length + 1),
