@@ -4,6 +4,7 @@ class DetailPlayList {
   final List<String> ar_name;
   final String al_name;
   final String picUrl;
+  int? subscribedCount;
   bool subscribed;
 
   DetailPlayList({
@@ -13,6 +14,7 @@ class DetailPlayList {
     required this.al_name,
     required this.picUrl,
     this.subscribed = false,
+    this.subscribedCount,
   });
 
   DetailPlayList.fromMap(Map<String, dynamic> map)
@@ -21,5 +23,6 @@ class DetailPlayList {
         ar_name = map['ar'].map<String>((e) => e['name'].toString()).toList(),
         al_name = map['al']['name'],
         picUrl = map['al']['picUrl'],
-        subscribed = map['subscribed'] ?? false;
+        subscribed = map['subscribed'] ?? false,
+        subscribedCount = map['subscribedCount'];
 }

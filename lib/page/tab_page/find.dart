@@ -31,6 +31,7 @@ class _FindState extends State<Find> with SingleTickerProviderStateMixin {
     _easyRefreshController = EasyRefreshController();
     _dio = context.read<HttpModel>().dio;
     _animationController = AnimationController(vsync: this);
+    
   }
 
   @override

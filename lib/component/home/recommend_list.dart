@@ -9,9 +9,11 @@ import 'package:demo09/api/transformer/recommend.dart';
 import 'package:demo09/model/detail_mv.dart';
 import 'package:demo09/model/detail_playlist.dart';
 import 'package:demo09/model/play_list.dart';
+import 'package:demo09/model/playlist_data.dart';
 import 'package:demo09/notify/network_progress.dart';
 import 'package:demo09/store/http.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
@@ -45,13 +47,11 @@ class _RecommendListState extends State<RecommendList> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    print('推荐didChangeDependencies');
   }
 
   @override
   void didUpdateWidget(RecommendList oldWidget) {
     super.didUpdateWidget(oldWidget);
-    print('推荐didUpdateWidget调用');
   }
 
   String formatNum(double num, int postion) {
@@ -114,18 +114,12 @@ class _RecommendListState extends State<RecommendList> {
       httpTransformer: DetailPlayListTransfromer.getInstance(),
     );
     if (res?.ok ?? false) {
-      List<DetailPlayList> data = res!.data['tracks']
-          .map<DetailPlayList>((e) => DetailPlayList.fromMap(e))
-          .toList();
+      List<DetailPlayList> data = res!.data['tracks'].map<DetailPlayList>((e) {
+        return DetailPlayList.fromMap(e);
+      }).toList();
       print('开始跳转');
       await Navigator.pushNamed(context, '/PlayList', arguments: {
-        'name': res.data['name'],
-        'subscribed':res.data['subscribed'],
-        'coverImg': Image.network(
-          res.data['coverImgUrl'],
-          fit: BoxFit.cover,
-        ),
-        'updateTime': res.data['updateTime'],
+        'detail': PlayListData.fromMap(res.data),
         'data': data,
       });
       print('返回');
@@ -287,10 +281,12 @@ class _RecommendListState extends State<RecommendList> {
             ),
           ),
           onTap: () async {
+            EasyLoading.instance..userInteractions = false;
+            EasyLoading.show(status: 'waiting...');
             switch (widget.type) {
               case 'playlist':
                 await getPlayListDetail(
-                    '${widget.detailUrl}${playlist[index]?.id}');
+                    '${widget.detailUrl}${playlist[index]?.id}&t=${DateTime.now().millisecondsSinceEpoch}');
                 break;
               case 'mv':
                 await getMVDetail('${widget.detailUrl}${playlist[index]?.id}');

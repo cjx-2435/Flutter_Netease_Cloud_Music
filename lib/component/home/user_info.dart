@@ -39,8 +39,6 @@ class _UserInfoState extends State<UserInfo> {
     );
     HttpResponse? res =
         await _dio?.get('/logout?${DateTime.now().millisecondsSinceEpoch}');
-    print(res?.ok);
-    print(res?.error);
     if (res?.ok ?? false) {
       SharedPreferences storage = await SharedPreferences.getInstance();
       await storage.remove('nickname');

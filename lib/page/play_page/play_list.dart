@@ -1,5 +1,12 @@
+
+import 'package:demo09/api/config/http_client.dart';
+import 'package:demo09/api/config/http_response.dart';
 import 'package:demo09/model/detail_playlist.dart';
+import 'package:demo09/model/playlist_data.dart';
+import 'package:demo09/store/http.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:provider/provider.dart';
 
 class PlayListPage extends StatefulWidget {
   const PlayListPage({Key? key}) : super(key: key);
@@ -9,27 +16,52 @@ class PlayListPage extends StatefulWidget {
 }
 
 class _PlayListPageState extends State<PlayListPage> {
-  bool? subscribed;
-  String? name;
-  Image? coverImg;
-  String? updateTime;
+  PlayListData? data;
+  String updateTime = '';
+  List<int> likelist = [];
   List<DetailPlayList>? list;
+  late HttpClient _dio;
+
   @override
   void initState() {
     super.initState();
+    if (EasyLoading.isShow) {
+      EasyLoading.dismiss();
+    }
+    _dio = context.read<HttpModel>().dio;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    dynamic args = ModalRoute.of(context)?.settings.arguments;
+    data = args['detail'];
+    DateTime time = DateTime.fromMillisecondsSinceEpoch(data!.updateTime);
+    updateTime =
+        "最近更新：${time.year == DateTime.now().year ? '' : time.year.toString() + '年'} ${time.month}月 ${time.day}日";
+    list = args['data'];
+  }
+
+  Future<void> _likelist() async {
+    HttpResponse res =
+        await _dio.get('/likelist?t=${DateTime.now().millisecondsSinceEpoch}');
+    if (res.ok) {
+      likelist = res.data['ids'].cast<int>();
+    }
+  }
+
+  void _subscribe() async {
+    HttpResponse res = await _dio.post(
+        '/playlist/subscribe?t=${data!.subscribed! ? 2 : 1}&id=$data.id&t=${DateTime.now().millisecondsSinceEpoch}');
+    if (res.ok) {
+      data!.subscribed = !data!.subscribed!;
+      setState(() {});
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    dynamic data = ModalRoute.of(context)?.settings.arguments;
-    name = data?['name'];
-    subscribed = data?['subscribed'] ?? false;
-    coverImg = data?['coverImg'];
-    DateTime time = DateTime.fromMillisecondsSinceEpoch(data?['updateTime']);
-    updateTime =
-        "最近更新：${time.year == DateTime.now().year ? '' : time.year.toString() + '年'} ${time.month}月 ${time.day}日";
-    list = data?['data'];
-    print('subscribed$subscribed');
+    print(likelist);
     return Material(
       child: CustomScrollView(
         slivers: [
@@ -46,17 +78,22 @@ class _PlayListPageState extends State<PlayListPage> {
       expandedHeight: 280,
       flexibleSpace: FlexibleSpaceBar(
         title: Text(
-          name ?? '',
+          data!.name,
           style: TextStyle(fontSize: 16),
         ),
         background: Stack(
           children: [
-            SizedBox.expand(child: coverImg),
+            SizedBox.expand(
+              child: Image.network(
+                data!.coverImgUrl,
+                fit: BoxFit.cover,
+              ),
+            ),
             Positioned(
               left: 5,
               bottom: 5,
               child: Text(
-                updateTime ?? '',
+                updateTime,
                 style: TextStyle(color: Colors.white, fontSize: 14),
               ),
             ),
@@ -85,31 +122,23 @@ class _PlayListPageState extends State<PlayListPage> {
                 Padding(
                   padding: EdgeInsets.only(right: 15),
                   child: Text(
-                    '播放全部 (共${list!.length}首)',
+                    '全部共${list!.length}首',
                     textScaleFactor: 1.4,
                   ),
                 ),
                 Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      print('收藏状态:$subscribed');
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(18),
-                        ),
-                        color: subscribed!
-                            ? Colors.grey[300]
-                            : Theme.of(context).primaryColor,
+                  child: Ink(
+                    width: double.infinity,
+                    height: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(18),
                       ),
-                      width: double.infinity,
-                      height: double.infinity,
-                      alignment: Alignment.center,
-                      child: subscribed!
-                          ? Text('取消收藏', style: TextStyle(color: Colors.black))
-                          : Text('收藏', style: TextStyle(color: Colors.white)),
+                      color: data!.subscribed!
+                          ? Colors.grey[300]
+                          : Theme.of(context).primaryColor,
                     ),
+                    child: _subscribeControl(),
                   ),
                 ),
               ],
@@ -117,46 +146,37 @@ class _PlayListPageState extends State<PlayListPage> {
           );
         } else
           return InkWell(
+            splashColor: Theme.of(context).hoverColor,
+            onTap: () async {
+              print(list![index - 1].id);
+              print(list![index - 1].name);
+              // try {
+              //   int result = await AudioPlayer()
+              //       .play('/song/url?id=${list![index - 1].id}');
+              //   if (result == 1) {
+              //     print('正在播放');
+              //   }
+              // } catch (e) {
+              //   print(e);
+              // }
+            },
             child: Container(
               constraints: BoxConstraints.tightFor(height: 70),
-              padding: EdgeInsets.only(top: 5, bottom: 5),
               child: Column(
                 children: [
                   Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(bottom: 10),
-                      child: Row(
-                        children: [
-                          Container(
-                            alignment: Alignment.center,
-                            width: 50,
-                            height: 50,
-                            child: Text(
-                              index.toString(),
-                              style: TextStyle(fontSize: 18),
-                            ),
+                    child: Row(
+                      children: [
+                        _numTag(index),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              _songInfo(index),
+                              _likeButton(index),
+                            ],
                           ),
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  list![index - 1].name,
-                                  style: TextStyle(fontSize: 18),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                Text(
-                                  "${list![index - 1].ar_name.join('/')} - ${list![index - 1].al_name}",
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.grey),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                        )
+                      ],
                     ),
                   ),
                   index == list!.length
@@ -171,6 +191,125 @@ class _PlayListPageState extends State<PlayListPage> {
             ),
           );
       }, childCount: list!.length + 1),
+    );
+  }
+
+  Widget _subscribeControl() {
+    return data!.subscribed!
+        ? _collectionControl(
+            text: '取消收藏',
+            textColor: Colors.black,
+            splashColor: Colors.grey[100],
+            onTap: () {
+              _subscribe();
+            })
+        : _collectionControl(
+            text: '+收藏(${data!.subscribedCount})',
+            textColor: Colors.white,
+            splashColor: Colors.redAccent,
+            onTap: () {
+              _subscribe();
+            },
+          );
+  }
+
+  Widget _numTag(index) {
+    return Container(
+      alignment: Alignment.center,
+      width: 50,
+      height: 50,
+      child: Text(
+        index.toString(),
+        style: TextStyle(fontSize: 18),
+      ),
+    );
+  }
+
+  Widget _songInfo(index) {
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            list![index - 1].name,
+            style: TextStyle(fontSize: 18),
+            overflow: TextOverflow.ellipsis,
+          ),
+          SizedBox(
+            height: 3,
+          ),
+          Text(
+            "${list![index - 1].ar_name.join('/')}${list![index - 1].al_name != '' ? ' - ${list![index - 1].al_name}' : ''}",
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _likeButton(index) {
+    return StatefulBuilder(builder: (context, setState) {
+      return FutureBuilder(
+          future: _likelist(),
+          builder: (context, snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+              case ConnectionState.waiting:
+              case ConnectionState.active:
+                return IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.favorite_border),
+                  color: Colors.grey,
+                );
+              case ConnectionState.done:
+              default:
+                return IconButton(
+                  onPressed: () async {
+                    HttpResponse res = await _dio.get(
+                        '/like?id=${list![index - 1].id}&like=${!likelist.contains(list![index - 1].id)}&t=${DateTime.now().millisecondsSinceEpoch}');
+
+                    if (res.ok) {
+                      setState(() {});
+                    }
+                  },
+                  icon: likelist.contains(list![index - 1].id)
+                      ? Icon(
+                          Icons.favorite,
+                          color: Theme.of(context).primaryColor,
+                        )
+                      : Icon(
+                          Icons.favorite_border,
+                          color: Colors.grey,
+                        ),
+                );
+            }
+          });
+    });
+  }
+
+  Widget _collectionControl({
+    required String text,
+    Color? textColor,
+    Color? splashColor,
+    void Function()? onTap,
+  }) {
+    return InkWell(
+      borderRadius: BorderRadius.only(
+        topRight: Radius.circular(18),
+      ),
+      child: Align(
+        alignment: Alignment.center,
+        child: Text(
+          text,
+          textScaleFactor: 1.4,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(color: textColor),
+        ),
+      ),
+      splashColor: splashColor,
+      onTap: onTap,
     );
   }
 }

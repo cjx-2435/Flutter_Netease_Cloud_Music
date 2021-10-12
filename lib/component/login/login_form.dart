@@ -42,6 +42,7 @@ class _LoginFormState extends State<LoginForm> {
       ..backgroundColor = Colors.black
       ..indicatorType = EasyLoadingIndicatorType.circle
       ..indicatorSize = 50
+      ..userInteractions = false
       ..radius = 10;
     EasyLoading.show(
       status: '发送验证码...',
