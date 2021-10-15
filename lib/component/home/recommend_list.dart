@@ -124,6 +124,7 @@ class _RecommendListState extends State<RecommendList> {
       });
       print('返回');
     } else {
+      if (EasyLoading.isShow) EasyLoading.dismiss();
       print(res?.error);
     }
   }
@@ -217,66 +218,9 @@ class _RecommendListState extends State<RecommendList> {
             margin: EdgeInsets.symmetric(vertical: 7, horizontal: 10),
             child: Column(
               children: [
-                Expanded(
-                  child: Stack(
-                    children: [
-                      ClipRRect(
-                        child: Container(
-                          width: 100,
-                          height: 150,
-                          decoration: BoxDecoration(
-                            color: Colors.grey,
-                          ),
-                          child: Image.network(
-                            playlist[index]!.picUrl,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      Positioned(
-                        top: 3,
-                        right: 3,
-                        child: Container(
-                          padding: EdgeInsets.all(3),
-                          decoration: BoxDecoration(
-                            color: Colors.black45,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.headset,
-                                color: Colors.grey,
-                                size: 12,
-                              ),
-                              Text(
-                                playlist[index]!.playcount! >= 10000
-                                    ? (playlist[index]!.playcount! >= 100000000
-                                        ? '${formatNum((playlist[index]!.playcount! / 100000000), 2).toString()}亿'
-                                        : '${formatNum((playlist[index]!.playcount! / 10000), 2).toString()}万')
-                                    : playlist[index]!.playcount.toString(),
-                                style:
-                                    TextStyle(color: Colors.grey, fontSize: 12),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                _renderPoster(index),
                 Padding(padding: EdgeInsets.only(bottom: 7)),
-                Container(
-                  width: 100,
-                  height: 40,
-                  child: Text(
-                    playlist[index]!.name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                ),
+                _renderDescription(index),
               ],
             ),
           ),
@@ -286,7 +230,8 @@ class _RecommendListState extends State<RecommendList> {
             switch (widget.type) {
               case 'playlist':
                 await getPlayListDetail(
-                    '${widget.detailUrl}${playlist[index]?.id}&t=${DateTime.now().millisecondsSinceEpoch}');
+                  '${widget.detailUrl}${playlist[index]?.id}&t=${DateTime.now().millisecondsSinceEpoch}',
+                );
                 break;
               case 'mv':
                 await getMVDetail('${widget.detailUrl}${playlist[index]?.id}');
@@ -294,10 +239,80 @@ class _RecommendListState extends State<RecommendList> {
               default:
                 throw new Exception('请求未匹配成功');
             }
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
           },
         );
       },
       itemCount: playlist.length,
+    );
+  }
+
+  Widget _renderDescription(int index) {
+    return Container(
+      width: 100,
+      height: 40,
+      child: Text(
+        playlist[index]!.name,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(color: Colors.grey),
+      ),
+    );
+  }
+
+  Widget _renderPoster(int index) {
+    return Expanded(
+      child: Stack(
+        children: [
+          ClipRRect(
+            child: Container(
+              width: 100,
+              height: 150,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+              ),
+              child: Image.network(
+                playlist[index]!.picUrl,
+                fit: BoxFit.cover,
+              ),
+            ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          Positioned(
+            top: 3,
+            right: 3,
+            child: _renderPlayCounts(index),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _renderPlayCounts(int index) {
+    return Container(
+      padding: EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: Colors.black45,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.headset,
+            color: Colors.grey,
+            size: 12,
+          ),
+          Text(
+            playlist[index]!.playcount! >= 10000
+                ? (playlist[index]!.playcount! >= 100000000
+                    ? '${formatNum((playlist[index]!.playcount! / 100000000), 2).toString()}亿'
+                    : '${formatNum((playlist[index]!.playcount! / 10000), 2).toString()}万')
+                : playlist[index]!.playcount.toString(),
+            style: TextStyle(color: Colors.grey, fontSize: 12),
+          ),
+        ],
+      ),
     );
   }
 }

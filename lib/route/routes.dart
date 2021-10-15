@@ -2,6 +2,7 @@ import 'package:demo09/page/home_page.dart';
 import 'package:demo09/page/login.dart';
 import 'package:demo09/page/play_page/play_list.dart';
 import 'package:demo09/page/play_page/play_mv.dart';
+import 'package:demo09/page/song_page.dart';
 import 'package:flutter/cupertino.dart';
 
 class Routes {
@@ -11,6 +12,7 @@ class Routes {
       '/Login': (context) => LoginPage(),
       '/PlayList': (context) => PlayListPage(),
       '/PlayMV': (context) => PlayMVPage(),
+      '/SongPage':(context)=> SongPage(),
     };
   }
 }

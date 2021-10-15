@@ -1,4 +1,4 @@
-
+import 'package:audioplayers/audioplayers.dart';
 import 'package:demo09/api/config/http_client.dart';
 import 'package:demo09/api/config/http_response.dart';
 import 'package:demo09/model/detail_playlist.dart';
@@ -16,6 +16,7 @@ class PlayListPage extends StatefulWidget {
 }
 
 class _PlayListPageState extends State<PlayListPage> {
+  AudioPlayer audioPlayer = AudioPlayer();
   PlayListData? data;
   String updateTime = '';
   List<int> likelist = [];
@@ -52,7 +53,7 @@ class _PlayListPageState extends State<PlayListPage> {
 
   void _subscribe() async {
     HttpResponse res = await _dio.post(
-        '/playlist/subscribe?t=${data!.subscribed! ? 2 : 1}&id=$data.id&t=${DateTime.now().millisecondsSinceEpoch}');
+        '/playlist/subscribe?t=${data!.subscribed! ? 2 : 1}&id=${data!.id}&t=${DateTime.now().millisecondsSinceEpoch}');
     if (res.ok) {
       data!.subscribed = !data!.subscribed!;
       setState(() {});
@@ -148,17 +149,18 @@ class _PlayListPageState extends State<PlayListPage> {
           return InkWell(
             splashColor: Theme.of(context).hoverColor,
             onTap: () async {
-              print(list![index - 1].id);
-              print(list![index - 1].name);
-              // try {
-              //   int result = await AudioPlayer()
-              //       .play('/song/url?id=${list![index - 1].id}');
-              //   if (result == 1) {
-              //     print('正在播放');
-              //   }
-              // } catch (e) {
-              //   print(e);
-              // }
+              HttpResponse res =
+                  await _dio.get('/song/url?id=${list![index - 1].id}');
+              if (res.ok) {
+                print(res.data['data'][0]['url']);
+                // int status = await audioPlayer.play(res.data['data'][0]['url']);
+                // if (status == 1) {
+                  EasyLoading.show(status: 'waiting...');
+                  await Navigator.of(context).pushNamed('/SongPage',
+                      arguments: {'id': list![index - 1].id});
+                  if (EasyLoading.isShow) EasyLoading.dismiss();
+                // }
+              }
             },
             child: Container(
               constraints: BoxConstraints.tightFor(height: 70),
