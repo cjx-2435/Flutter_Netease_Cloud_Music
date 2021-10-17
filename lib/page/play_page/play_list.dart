@@ -1,4 +1,3 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:demo09/api/config/http_client.dart';
 import 'package:demo09/api/config/http_response.dart';
 import 'package:demo09/model/detail_playlist.dart';
@@ -6,6 +5,7 @@ import 'package:demo09/model/playlist_data.dart';
 import 'package:demo09/store/http.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 class PlayListPage extends StatefulWidget {
@@ -16,7 +16,6 @@ class PlayListPage extends StatefulWidget {
 }
 
 class _PlayListPageState extends State<PlayListPage> {
-  AudioPlayer audioPlayer = AudioPlayer();
   PlayListData? data;
   String updateTime = '';
   List<int> likelist = [];
@@ -53,7 +52,7 @@ class _PlayListPageState extends State<PlayListPage> {
 
   void _subscribe() async {
     HttpResponse res = await _dio.post(
-        '/playlist/subscribe?t=${data!.subscribed! ? 2 : 1}&id=${data!.id}&t=${DateTime.now().millisecondsSinceEpoch}');
+        '/playlist/subscribe?t=${data!.subscribed! ? 2 : 1}&id=${data!.id}&timestamp=${DateTime.now().millisecondsSinceEpoch}');
     if (res.ok) {
       data!.subscribed = !data!.subscribed!;
       setState(() {});
@@ -62,13 +61,25 @@ class _PlayListPageState extends State<PlayListPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(likelist);
     return Material(
-      child: CustomScrollView(
-        slivers: [
-          _renderAppBar(),
-          _renderList(),
-        ],
+      child: FutureBuilder(
+        future: _likelist(),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              return SizedBox();
+            case ConnectionState.done:
+            default:
+              return CustomScrollView(
+                slivers: [
+                  _renderAppBar(),
+                  _renderList(),
+                ],
+              );
+          }
+        },
       ),
     );
   }
@@ -111,7 +122,6 @@ class _PlayListPageState extends State<PlayListPage> {
           return Container(
             height: 50,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
               border: Border.all(width: 1, color: Colors.grey.shade300),
             ),
             child: Row(
@@ -132,9 +142,6 @@ class _PlayListPageState extends State<PlayListPage> {
                     width: double.infinity,
                     height: double.infinity,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(18),
-                      ),
                       color: data!.subscribed!
                           ? Colors.grey[300]
                           : Theme.of(context).primaryColor,
@@ -149,18 +156,11 @@ class _PlayListPageState extends State<PlayListPage> {
           return InkWell(
             splashColor: Theme.of(context).hoverColor,
             onTap: () async {
-              HttpResponse res =
-                  await _dio.get('/song/url?id=${list![index - 1].id}');
-              if (res.ok) {
-                print(res.data['data'][0]['url']);
-                // int status = await audioPlayer.play(res.data['data'][0]['url']);
-                // if (status == 1) {
-                  EasyLoading.show(status: 'waiting...');
-                  await Navigator.of(context).pushNamed('/SongPage',
-                      arguments: {'id': list![index - 1].id});
-                  if (EasyLoading.isShow) EasyLoading.dismiss();
-                // }
-              }
+              await Navigator.pushNamed(context, '/SongPage', arguments: {
+                'list': list,
+                'index': index - 1,
+              });
+              setState(() {});
             },
             child: Container(
               constraints: BoxConstraints.tightFor(height: 70),
@@ -252,43 +252,28 @@ class _PlayListPageState extends State<PlayListPage> {
   }
 
   Widget _likeButton(index) {
-    return StatefulBuilder(builder: (context, setState) {
-      return FutureBuilder(
-          future: _likelist(),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.none:
-              case ConnectionState.waiting:
-              case ConnectionState.active:
-                return IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.favorite_border),
-                  color: Colors.grey,
-                );
-              case ConnectionState.done:
-              default:
-                return IconButton(
-                  onPressed: () async {
-                    HttpResponse res = await _dio.get(
-                        '/like?id=${list![index - 1].id}&like=${!likelist.contains(list![index - 1].id)}&t=${DateTime.now().millisecondsSinceEpoch}');
-
-                    if (res.ok) {
-                      setState(() {});
-                    }
-                  },
-                  icon: likelist.contains(list![index - 1].id)
-                      ? Icon(
-                          Icons.favorite,
-                          color: Theme.of(context).primaryColor,
-                        )
-                      : Icon(
-                          Icons.favorite_border,
-                          color: Colors.grey,
-                        ),
-                );
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return IconButton(
+          onPressed: () async {
+            HttpResponse res = await _dio.get(
+                '/like?id=${list![index - 1].id}&like=${!likelist.contains(list![index - 1].id)}&t=${DateTime.now().millisecondsSinceEpoch}');
+            if (res.ok) {
+              setState(() {});
             }
-          });
-    });
+          },
+          icon: likelist.contains(list![index - 1].id)
+              ? Icon(
+                  Icons.favorite,
+                  color: Theme.of(context).primaryColor,
+                )
+              : Icon(
+                  Icons.favorite_border,
+                  color: Colors.grey,
+                ),
+        );
+      },
+    );
   }
 
   Widget _collectionControl({

@@ -31,7 +31,6 @@ class _FindState extends State<Find> with SingleTickerProviderStateMixin {
     _easyRefreshController = EasyRefreshController();
     _dio = context.read<HttpModel>().dio;
     _animationController = AnimationController(vsync: this);
-    
   }
 
   @override
@@ -58,7 +57,7 @@ class _FindState extends State<Find> with SingleTickerProviderStateMixin {
           IconButton(
             onPressed: () {
               context.read<PlayerModel>().setVisibleStatus =
-                  !context.read<PlayerModel>().getVisibleStatus;
+                  !context.read<PlayerModel>().visibleStatus;
               showDialog(
                 context: context,
                 builder: (context) {
@@ -115,9 +114,11 @@ class _FindState extends State<Find> with SingleTickerProviderStateMixin {
                 detailUrl: '/mv/url?id=',
               ),
               Builder(builder: (context) {
-                return SizedBox(
-                  height: context.watch<PlayerModel>().getHeight,
-                );
+                return context.watch<PlayerModel>().visibleStatus
+                    ? SizedBox(
+                        height: 60,
+                      )
+                    : SizedBox();
               }),
             ],
           ),

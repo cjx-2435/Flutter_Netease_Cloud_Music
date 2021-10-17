@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:demo09/api/config/http_client.dart';
 import 'package:demo09/api/config/http_config.dart';
 import 'package:demo09/page/login.dart';
@@ -26,6 +27,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   HttpClient? client;
+  AudioPlayer player = AudioPlayer();
 
   Future<void> _createHttpClient() async {
     String path =
@@ -74,7 +76,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider<HttpModel>(create: (_) => HttpModel(client!)),
         ChangeNotifierProvider<AccountModel>(create: (_) => AccountModel()),
         ChangeNotifierProvider<RefreshModel>(create: (_) => RefreshModel()),
-        ChangeNotifierProvider<PlayerModel>(create: (_) => PlayerModel()),
+        ChangeNotifierProvider<PlayerModel>(create: (_) => PlayerModel(player)),
       ],
       child: MaterialApp(
         // showPerformanceOverlay: true,

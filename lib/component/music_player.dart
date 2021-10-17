@@ -1,4 +1,3 @@
-
 import 'package:demo09/store/player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +10,6 @@ class MusicPlayer extends StatefulWidget {
 }
 
 class _MusicPlayerState extends State<MusicPlayer> {
-
   @override
   void initState() {
     super.initState();
@@ -23,15 +21,13 @@ class _MusicPlayerState extends State<MusicPlayer> {
       bottom: 0,
       left: 0,
       right: 0,
-      child: context.read<PlayerModel>().getVisibleStatus
+      child: context.read<PlayerModel>().visibleStatus
           ? Container(
-              height: context.watch<PlayerModel>().getHeight,
+              height: 60,
               width: double.infinity,
               color: Colors.red,
             )
-          : SizedBox(
-              height: context.watch<PlayerModel>().getHeight,
-            ),
+          : SizedBox(),
     );
   }
 }
